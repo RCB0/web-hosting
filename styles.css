@@ -18,7 +18,7 @@ body {
     grid-template-columns: repeat(3, 100px);
     grid-gap: 5px;
   }
-  
+  /*updated*/
   .cell {
     width: 100px;
     height: 100px;
