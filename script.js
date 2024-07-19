@@ -3,7 +3,7 @@ const statusText = document.getElementById('status');
 const restartButton = document.getElementById('restartButton');
 let currentPlayer = 'X';
 let gameActive = true;
-const gameState = Array(9).fill('');
+let gameState = Array(9).fill('');
 
 const winningConditions = [
   [0, 1, 2],
@@ -53,6 +53,12 @@ const handleCellClick = (index) => {
   }
 };
 
+const updateBoard = () => {
+  gameState.forEach((value, index) => {
+    cells[index].textContent = value;
+  });
+};
+
 cells.forEach((cell, index) => {
   cell.addEventListener('click', () => handleCellClick(index));
 });
@@ -61,7 +67,7 @@ restartButton.addEventListener('click', () => {
   gameState.fill('');
   currentPlayer = 'X';
   gameActive = true;
-  cells.forEach(cell => cell.textContent = '');
+  updateBoard();
   updateStatus(null);
   firebase.database().ref('gameState').set(gameState);
   firebase.database().ref('currentPlayer').set(currentPlayer);
@@ -70,10 +76,8 @@ restartButton.addEventListener('click', () => {
 firebase.database().ref('gameState').on('value', (snapshot) => {
   const remoteGameState = snapshot.val();
   if (remoteGameState) {
-    gameState.splice(0, gameState.length, ...remoteGameState);
-    gameState.forEach((value, index) => {
-      cells[index].textContent = value;
-    });
+    gameState = remoteGameState;
+    updateBoard();
     const result = checkWin();
     if (result) {
       gameActive = false;
